@@ -1,37 +1,38 @@
 # GradPath
 
-An interactive prototype that helps graduate students explore research directions, connect their interests to faculty, and plan their research journey. Built for the UNM/CNM App Contest.
+A research discovery and collaboration prototype for the UNM/CNM App Contest.
 
-## Run
+## Current demo
+- Public curated research directions, research briefs, and a browser-local roadmap.
+- Mock university sign-in with fictional student Alex Rivera and faculty Dr. Avery Morgan. No password, real NetID, ChatGPT sign-in, or official UNM authentication.
+- Faculty demo can create, edit, and close research posts.
+- Student demo can request to join open research; faculty demo can accept or decline; students can withdraw pending requests.
+- Student-faculty conversations, inbox, and replies. Switch demo roles to see both sides; no real people are contacted by these messages.
+- Real curated UNM profiles link to individual public faculty pages. Email buttons open a draft in the visitor's email app; they do not send automatically or use fictional identities as the sender.
+- Original GradPath SVG logo, wordmark, and favicon.
 
-Open `index.html` in a browser, or serve this folder with a static web server. There are no dependencies, API keys, or build steps.
+## Storage and isolation
+The browser demo uses `gradpath-university-demo-v1` in localStorage. Accounts, posts, requests, conversations, and the active demo role persist only in the same browser and site origin. Visitors cannot see one another's activity. Signing out preserves the demo records; Reset demo activity restores the sample data. Clearing browser storage removes edits. If storage is unavailable, activity lasts only until the page is reloaded.
 
-## Publish with GitHub Pages
+The planning workspace separately uses `gradpath-v1`; resetting the university demo leaves it intact. All sample profiles and opportunities are fictional and visibly labeled. Requests do not enroll students in real research. No live AI service or university integration is included.
 
-1. Use the private `Kritim-123/gradpath` repository. Publishing GitHub Pages from a private repository requires an eligible GitHub plan, such as GitHub Pro. Keep the repository private.
-2. Add the contents of this folder to the root of its `main` branch. Keep `index.html` at the repository root; upload the extracted files, not this ZIP.
-3. Open the repository's **Settings > Pages**.
-4. Under **Build and deployment**, select **Deploy from a branch**, then **main** and **/ (root)**, and save.
-5. Wait for GitHub's Pages deployment to complete. Use the URL shown in Settings > Pages.
+The frontend adapter never calls the existing server API. The earlier authenticated backend remains protected and preserved for future implementation, including its immutable D1 migration history. Mock identities cannot access it or impersonate existing users. Existing hosted records are untouched. The mock university sign-in is a demonstration, not a production authentication system.
 
-For the `Kritim-123/gradpath` repository, the expected address is `https://kritim-123.github.io/gradpath/`. This address is only live after successful deployment. No custom DNS settings are needed for GitHub's default address.
+## Hosting and development
+The current Vinext framework builds a Cloudflare Worker with the existing Sites-provisioned D1 binding. GitHub can hold private source; GitHub Pages cannot run the retained backend. The public Sites URL remains the deployed app.
 
-The repository is private, while the published prototype is intended to be publicly accessible to judges. The HTML, CSS, and JavaScript served by a public website can be inspected by its visitors.
+Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs`.
 
-The `.nojekyll` file marks this as a plain static website. Relative asset paths and hash navigation support a project subdirectory.
+The browser demo does not require local database setup. To test the retained backend separately, apply generated migrations using the starter's documented Wrangler local migration command. Hosted migrations and records remain separate from local state.
 
-## Prototype features
+Mock tests cover the student-to-faculty request and reply journey, research posting and restrictions, persistence, sign-out, reset, separate visitors, and unavailable storage. Backend tests use fresh in-memory SQLite databases and actual migrations to verify authorization, ownership, CSRF, request decisions, message access, rate limits, and faculty matching.
 
-- Editable research interests, skills, goal, and exploration window
-- Six curated research directions, local ranking, search, and filters
-- Saved directions and comparison
-- Faculty discovery with official source links
-- Research brief download
-- Research roadmap with dates, sequential milestones, notes, and export
-- Browser-local persistence and a confirmed reset
+## Source layout
+- `public/app.js` and `public/data.js`: discovery and planning flows.
+- `public/mock-university.js`: isolated browser-only demo data and sessions.
+- `public/community.js` and `public/community.css`: mock sign-in, research, requests, and messaging interfaces.
+- `lib/gradpath-api.mjs` and `app/api/[...path]/route.ts`: retained authenticated backend, unused by the demo UI.
+- `db/schema.ts` and `drizzle/`: retained schema and immutable migrations.
+- `.openai/hosting.json`: existing Site identity and DB binding.
 
-## Data and scope
-
-This independent student prototype has no UNM authentication, backend, or live AI service. Selections and notes stay in the current browser's localStorage under `gradpath-v1`. Each visitor has a separate local workspace; information does not automatically transfer from another website address or browser.
-
-Research directions are illustrative starting points, not validated novel proposals. Faculty connections are inferred from public sources; supervision, availability, and funding are unconfirmed. Roadmap dates are draft work dates. Confirm degree requirements against the applicable catalog and program. Sources were checked on November 5, 2026 and are linked in the relevant screens.
+Never commit local environment files, credentials, `.wrangler`, `.sites-runtime`, or `node_modules`.

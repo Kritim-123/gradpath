@@ -6,26 +6,30 @@
 <meta name="theme-color" content="#204d43">
 <meta name="description" content="Find a research direction that feels like you. Explore interests, connect with UNM faculty, and map your graduate journey.">
 <title>GradPath — Find your research direction</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="styles.css">
-<script src="data.js" defer></script>
-<script src="app.js" defer></script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/community.css">
+<script src="/data.js" defer></script>
+<script src="/mock-university.js" defer></script>
+<script src="/community.js" defer></script>
+<script src="/app.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main" data-action="skip">Skip to content</a>
 <aside class="sidebar" aria-label="Main navigation">
 <button class="mobile-close icon-button" data-action="close-menu" aria-label="Close navigation">×</button>
-<a class="brand" href="#discover"><span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 25V13a6 6 0 0 1 12 0v6a4 4 0 0 1-8 0v-4M20 7h5v19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></span>GradPath<span class="brand-dot"></span></a>
+<a class="brand" href="#discover" aria-label="GradPath home"><img class="brand-logo" src="/mark.svg" alt="">GradPath</a>
 <div class="workspace"><span class="workspace-icon">U</span><div><strong>University of New Mexico</strong><small>Graduate workspace</small></div></div>
 <div class="nav-label">YOUR JOURNEY</div>
 <nav id="nav"></nav>
 <div class="sidebar-bottom">
 <div class="journey-note"><span class="mini-spark">✧</span><p>Every great question<br>starts with curiosity.</p><span>Let’s find yours.</span></div>
-<button class="profile-link" data-action="route" data-value="profile"><span class="avatar">GS</span><span><strong>Graduate student</strong><small>MS · Computer Science</small></span><span class="profile-arrow">↗</span></button>
+<button class="profile-link" data-action="route" data-value="account"><span class="avatar">GS</span><span><strong>Graduate student</strong><small>MS · Computer Science</small></span><span class="profile-arrow">↗</span></button>
 </div>
 </aside>
 <div class="page-shell">
-<header class="topbar"><button class="mobile-menu icon-button" aria-label="Toggle navigation" data-action="menu"></button><div class="breadcrumb">Your workspace <span>/</span> <strong id="crumb">Discover</strong></div><div class="topbar-actions"><button class="prototype-badge" data-action="about"><span></span>Interactive prototype</button><button class="icon-button help-button" aria-label="About this prototype" data-action="about">?</button></div></header>
+<header class="topbar"><button class="mobile-menu icon-button" aria-label="Toggle navigation" data-action="menu"></button><div class="breadcrumb">Your workspace <span>/</span> <strong id="crumb">Discover</strong></div><div class="topbar-actions"><a id="account-top" class="btn account-top" href="#account">University sign in</a><button class="prototype-badge" data-action="about"><span></span>Interactive prototype</button><button class="icon-button help-button" aria-label="About this prototype" data-action="about">?</button></div></header>
+<div id="demo-mode-bar" class="demo-mode-bar" role="status"></div>
 <main id="main" tabindex="-1"></main>
 <footer class="app-footer"><span>Made for your next chapter.</span><span>Independent student prototype · UNM sources linked throughout</span></footer>
 </div>

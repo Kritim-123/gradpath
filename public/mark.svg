@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">GradPath</title>
+  <desc id="desc">An open book with a rising path leading to a spark of discovery.</desc>
+  <rect x="2" y="2" width="60" height="60" rx="18" fill="#204f43"/>
+  <path d="M14 24c6.8-.5 12.2 2.1 16 6.3V47c-4.7-4.1-10-6-16-5.5V24Z" fill="#f8f9f5"/>
+  <path d="M35 30.3c3.8-4.2 9.2-6.8 16-6.3v17.5c-6-.5-11.3 1.4-16 5.5V30.3Z" fill="#a8c7ad"/>
+  <path d="M32.5 49V35c0-8.3 11-7.2 11-14" stroke="#e7f2b5" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="m43.5 10 1.7 4.8L50 16.5l-4.8 1.7-1.7 4.8-1.7-4.8-4.8-1.7 4.8-1.7 1.7-4.8Z" fill="#e7f2b5"/>
+</svg>
