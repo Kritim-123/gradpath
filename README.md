@@ -19,7 +19,13 @@ The planning workspace separately uses `gradpath-v1`; resetting the university d
 The frontend adapter never calls the existing server API. The earlier authenticated backend remains protected and preserved for future implementation, including its immutable D1 migration history. Mock identities cannot access it or impersonate existing users. Existing hosted records are untouched. The mock university sign-in is a demonstration, not a production authentication system.
 
 ## Hosting and development
-The current Vinext framework builds a Cloudflare Worker with the existing Sites-provisioned D1 binding. GitHub can hold private source; GitHub Pages cannot run the retained backend. The public Sites URL remains the deployed app.
+The public browser demo is deployed to [GitHub Pages](https://kritim-123.github.io/gradpath/). The existing [Sites deployment](https://gradpath-research-journey.raged-rhombus.chatgpt.site/) remains available separately. Browser activity does not transfer between these addresses.
+
+The `Deploy GradPath to GitHub Pages` workflow runs the prototype tests, exports the static demo, and publishes it after each push to `main`. In repository **Settings > Pages**, set the source to **GitHub Actions**. The workflow can also be started manually from the Actions tab.
+
+To build the Pages artifact locally, run `node scripts/build-pages.mjs` with Node 22.13 or later. It creates `dist/pages/index.html` and an explicit list of public assets, using relative asset paths so the app works under `/gradpath/`. Serve that directory with a static HTTP server to preview it. This export needs no package installation, API keys, or database. Hash-based navigation, mock sign-in, requests, and messages continue to run entirely in the browser.
+
+GitHub Pages does not run the retained API or database. The separate Vinext build produces a Cloudflare Worker with the existing Sites-provisioned D1 binding. Server code, migrations, and hosting settings are excluded from the Pages artifact.
 
 Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs`.
 

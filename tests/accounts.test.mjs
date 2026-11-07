@@ -53,7 +53,11 @@ test('only participants can read or send messages; duplicate threads are reused'
  assert.equal((await call(student,'threads',{recipientId:f.id})).data.id,thread.id);
  assert.equal((await call(student,'messages',{threadId:thread.id,body:'Hello, I am interested in your research.'})).status,200);
  assert.equal((await call(faculty,'messages',{threadId:thread.id,body:'Thanks! Let’s discuss your interests.'})).status,200);
- assert.equal((await call(faculty,'conversation/'+thread.id)).data.messages.length,2);
+ // Force a timestamp tie and IDs in reverse order to reproduce rapid replies.
+ const timestamp=new Date().toISOString();
+ x.sql.prepare('UPDATE messages SET created_at=?,id=? WHERE sender_id=?').run(timestamp,'z-first-message',s.id);
+ x.sql.prepare('UPDATE messages SET created_at=?,id=? WHERE sender_id=?').run(timestamp,'a-second-message',f.id);
+ assert.deepEqual((await call(faculty,'conversation/'+thread.id)).data.messages.map(m=>m.body),['Hello, I am interested in your research.','Thanks! Let’s discuss your interests.']);
  assert.equal((await call(outsider,'conversation/'+thread.id)).status,404);
  assert.equal((await call(null,'conversation/'+thread.id)).status,401);
  assert.equal((await call(outsider,'messages',{threadId:thread.id,body:'Unauthorized message'})).status,404);
