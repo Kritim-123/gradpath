@@ -1,4 +1,4 @@
-import { sqliteTable, text, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
 export const accounts = sqliteTable('accounts', {
   id:text('id').primaryKey(), userId:text('user_id').notNull().unique(), email:text('email').notNull(),
   role:text('role',{enum:['student','faculty']}).notNull(), name:text('name').notNull(),
@@ -25,3 +25,9 @@ export const messages = sqliteTable('messages', {
   id:text('id').primaryKey(),threadId:text('thread_id').notNull().references(()=>threads.id),
   senderId:text('sender_id').notNull().references(()=>accounts.id),body:text('body').notNull(),createdAt:text('created_at').notNull()
 },t=>[index('messages_thread_time').on(t.threadId,t.createdAt),index('messages_sender_time').on(t.senderId,t.createdAt)]);
+export const paperCache = sqliteTable('paper_cache', {
+ id:text('id').primaryKey(),payload:text('payload').notNull(),expiresAt:integer('expires_at').notNull()
+},t=>[index('paper_cache_expiry').on(t.expiresAt)]);
+export const paperLimits = sqliteTable('paper_limits', {
+ id:text('id').primaryKey(),hits:integer('hits').notNull(),expiresAt:integer('expires_at').notNull()
+},t=>[index('paper_limits_expiry').on(t.expiresAt)]);

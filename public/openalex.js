@@ -1,7 +1,7 @@
 'use strict';
-// Public, keyless OpenAlex requests. Never put an API key in a Pages asset.
+// The browser calls GradPath's backend. The OpenAlex key exists only on the server.
 const OpenAlex = (() => {
- const fields='id,title,doi,publication_year,authorships,primary_location,best_oa_location,open_access,type,is_retracted,abstract_inverted_index';
+ const endpoint='https://gradpath-research-journey.raged-rhombus.chatgpt.site/api/papers';
  const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
  const stop=new Set('a an and are as at be based by can could do does for from help how i in into is it me more my of on or our research should show some study that the their this to use using want we what when where which with would'.split(' '));
  function suggestQuery(question,field=''){
@@ -35,11 +35,8 @@ const OpenAlex = (() => {
   return {query,openOnly:input.openOnly===true,sort:input.sort==='newest'?'newest':'relevance'};
  }
  function searchURL(input){
-  const opt=options(input),url=new URL('https://api.openalex.org/works');
-  url.searchParams.set('search',opt.query);
-  url.searchParams.set('filter','is_retracted:false'+(opt.openOnly?',is_oa:true':''));
-  url.searchParams.set('per_page','6');url.searchParams.set('select',fields);
-  if(opt.sort==='newest')url.searchParams.set('sort','publication_date:desc');
+  const opt=options(input),url=new URL(endpoint);
+  url.searchParams.set('query',opt.query);url.searchParams.set('openOnly',opt.openOnly?'1':'0');url.searchParams.set('sort',opt.sort);
   return url.href;
  }
  function websiteURL(input){
@@ -61,9 +58,12 @@ const OpenAlex = (() => {
     const timeout=setTimeout(()=>{timedOut=true;controller.abort();},timeoutMs);
     try{
      const response=await fetchImpl(url,{signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer'});
-     if(response.status===429)throw issue('rate-limit','OpenAlex’s search allowance for this network has been reached. Try again later, or open your search on OpenAlex and sign in there.');
-     if(response.status===401||response.status===403)throw issue('access','OpenAlex is requiring authenticated access for this search. You can open it on OpenAlex and sign in there.');
-     if(!response.ok)throw issue('service','OpenAlex is temporarily unavailable. Please try again later.');
+     if(response.status===429){
+      let code;try{code=(await response.json()).error?.code;}catch{}
+      throw issue('rate-limit',code==='daily_limit'?'GradPath’s daily paper-search allowance has been reached. It resets at midnight UTC. Previously cached searches may still work.':'Paper search is receiving too many requests or has reached its current allowance. Try again later, or continue on OpenAlex.');
+     }
+     if(response.status===401||response.status===403)throw issue('access','GradPath paper search could not authorize this request. Please reopen GradPath and try again.');
+     if(!response.ok)throw issue('service','GradPath paper search is temporarily unavailable. Please try again later.');
      let data;try{data=await response.json();}catch{throw issue('response','OpenAlex returned an unreadable response. Please try again.');}
      if(!Array.isArray(data?.results))throw issue('response','OpenAlex returned an unreadable response. Please try again.');
      if(controller.signal.aborted)throw new DOMException('Search cancelled','AbortError');

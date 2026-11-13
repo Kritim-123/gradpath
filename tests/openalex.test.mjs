@@ -19,12 +19,12 @@ test('paper queries preserve 3D and Unicode terms, are editable, and send only e
  assert.match(api.suggestQuery('How can naïve models help?'),/naïve/);
  assert.equal(api.suggestQuery('','Robotics'),'Robotics');
  const url=new URL(api.searchURL({query:'3D projection & vision',openOnly:true,sort:'newest',name:'Private Name',notes:'private notes',api_key:'secret'}));
- assert.equal(url.origin,'https://api.openalex.org');assert.equal(url.searchParams.get('search'),'3D projection & vision');
- assert.equal(url.searchParams.get('sort'),'publication_date:desc');assert.equal(url.searchParams.get('filter'),'is_retracted:false,is_oa:true');
- assert.equal(url.searchParams.get('per_page'),'6');
+ assert.equal(url.origin,'https://gradpath-research-journey.raged-rhombus.chatgpt.site');assert.equal(url.pathname,'/api/papers');assert.equal(url.searchParams.get('query'),'3D projection & vision');
+ assert.equal(url.searchParams.get('sort'),'newest');assert.equal(url.searchParams.get('openOnly'),'1');
+ assert.equal([...url.searchParams.keys()].length,3);
  assert.ok(!url.href.includes('secret'));assert.ok(!url.href.includes('Private'));assert.ok(!url.href.includes('notes'));
  assert.throws(()=>api.searchURL({query:' '}));assert.throws(()=>api.searchURL({query:'a'.repeat(321)}));
- assert.ok(!new URL(api.searchURL({query:'robotics'})).searchParams.has('sort'));
+ assert.equal(new URL(api.searchURL({query:'robotics'})).searchParams.get('sort'),'relevance');
 });
 test('paper normalization tolerates missing metadata and rejects unsafe links and retracted work',()=>{
  const {api}=environment();
@@ -70,7 +70,7 @@ function uiEnvironment(fetchImpl){
 }
 test('search UI does not request data on render and escapes hostile publication metadata',()=>{
  let calls=0;const app=uiEnvironment(async()=>{calls++;return ok();});
- assert.match(app.paperSearchPanel(),/Searching sends the terms below to OpenAlex/);assert.equal(calls,0);
+ assert.match(app.paperSearchPanel(),/through GradPath’s backend to OpenAlex/);assert.equal(calls,0);
  const p=app.api.paper({...sample,title:'<img src=x onerror=alert(1)>',authorships:[{author:{display_name:'<script>bad</script>'}}]});
  const html=app.paperCard(p);assert.ok(!html.includes('<img'));assert.ok(!html.includes('<script>'));assert.match(html,/&lt;img/);assert.match(html,/OpenAlex record/);
 });
