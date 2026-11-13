@@ -60,7 +60,7 @@ const OpenAlex = (() => {
      const response=await fetchImpl(url,{signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer'});
      if(response.status===429){
       let code;try{code=(await response.json()).error?.code;}catch{}
-      throw issue('rate-limit',code==='daily_limit'?'GradPath’s daily paper-search allowance has been reached. It resets at midnight UTC. Previously cached searches may still work.':'Paper search is receiving too many requests or has reached its current allowance. Try again later, or continue on OpenAlex.');
+      throw issue('rate-limit',code==='daily_limit'?'GradPath’s daily research-search allowance has been reached. It resets at midnight UTC. Previously cached searches may still work.':'Paper search is receiving too many requests or has reached its current allowance. Try again later, or continue on OpenAlex.');
      }
      if(response.status===401||response.status===403)throw issue('access','GradPath paper search could not authorize this request. Please reopen GradPath and try again.');
      if(!response.ok)throw issue('service','GradPath paper search is temporarily unavailable. Please try again later.');

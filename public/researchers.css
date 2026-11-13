@@ -1,0 +1,30 @@
+.researcher-search .section-heading{margin-bottom:24px}
+.researcher-search .section-heading h2{margin-top:9px}
+.researcher-scopes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.researcher-scope{padding:18px 20px;border:1px solid var(--line);border-radius:12px;text-align:left;background:#fafbf7;color:var(--ink)}
+.researcher-scope strong,.researcher-scope span{display:block}
+.researcher-scope strong{font-size:16px;margin-bottom:5px}
+.researcher-scope span{font-size:12px;color:#61746b;line-height:1.5}
+.researcher-scope.active{background:var(--green);border-color:var(--green);color:white}
+.researcher-scope.active span{color:#d5e6d9}
+.researcher-scope:focus-visible,.researcher-toolbar button:focus-visible{outline:3px solid #8ca86e;outline-offset:3px}
+.researcher-form{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(150px,1fr) auto;align-items:end;gap:14px}
+.researcher-form .field-label{margin:0}.researcher-form .field{margin-top:8px}
+.researcher-note{margin:0 0 24px;align-items:flex-start;line-height:1.7}
+.researcher-toolbar{display:flex;flex-wrap:wrap;gap:4px;background:#eaf0e5;padding:5px;border-radius:10px;width:fit-content;margin-bottom:20px}
+.researcher-source{font-size:10px;color:#587167;letter-spacing:.5px;margin-bottom:18px}
+.researcher-card{min-width:0}.researcher-card h2,.researcher-card p,.researcher-card .tag{overflow-wrap:anywhere}
+.researcher-card .faculty-avatar{flex-shrink:0}.researcher-card .tag{white-space:normal}
+.researcher-card>p strong{font-size:10px;font-weight:600;letter-spacing:.3px}
+.researcher-card .researcher-count{margin:0 0 18px;font-size:11px}
+.researcher-card .action-row{flex-wrap:wrap;gap:12px}
+.researcher-affiliations{font-size:11px;line-height:1.8;margin:-8px 0 18px;color:#61746b}.researcher-affiliations summary{cursor:pointer}.researcher-affiliations p{margin:10px 0}
+.researcher-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:24px;font-size:11px;color:#61746b}
+.researcher-pagination .btn:disabled{opacity:.45;cursor:default}
+.researcher-state{padding:36px;border:1px dashed var(--line);border-radius:14px;background:#f2f5ed;line-height:1.7}
+.researcher-state h2{font-size:21px}.researcher-state p{font-size:13px}
+.faculty-directory{margin-top:32px;border-top:1px solid var(--line);padding-top:24px}
+.faculty-directory>summary{font-size:17px;font-weight:600;cursor:pointer;padding:8px 0;margin-bottom:14px}
+.faculty-directory .filters{flex-wrap:wrap}.faculty-directory .search{margin-left:0}
+@media(max-width:760px){.researcher-form{grid-template-columns:1fr 1fr}.researcher-form .btn{grid-column:1/-1}.researcher-scope{padding:15px}.researcher-scope strong{font-size:14px}.researcher-search .section-heading{align-items:flex-start}}
+@media(max-width:480px){.researcher-form{grid-template-columns:1fr}.researcher-scopes{gap:8px}.researcher-scope span{font-size:11px}.researcher-pagination{gap:8px;font-size:10px}.researcher-state{padding:22px}}

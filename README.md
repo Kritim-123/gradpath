@@ -35,7 +35,7 @@ To build the Pages artifact locally, run `node scripts/build-pages.mjs` with Nod
 
 GitHub Pages does not run the retained API or database. The separate Vinext build produces a Cloudflare Worker with the existing Sites-provisioned D1 binding. Server code, migrations, and hosting settings are excluded from the Pages artifact.
 
-Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs tests/openalex.test.mjs tests/papers-api.test.mjs`.
+Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs tests/openalex.test.mjs tests/papers-api.test.mjs tests/researchers.test.mjs`.
 
 The browser demo does not require local database setup. To test the retained backend separately, apply generated migrations using the starter's documented Wrangler local migration command. Hosted migrations and records remain separate from local state.
 
@@ -54,6 +54,16 @@ Browser origins are restricted to the GitHub Pages origin and the existing GradP
 Keywords are editable and are not an AI/semantic interpretation. Papers, abstracts, and links are external metadata and may be incomplete. Curated faculty matches remain separate; a paper's author is not automatically a GradPath account or an available advisor. The app has explicit empty, offline, timeout, unavailable-service, and quota states without substituting sample papers. A new search replaces older in-flight results.
 
 Deploy the Sites backend (including the appended D1 migration) before pushing the frontend switch to GitHub. Keep the existing account tables and migrations unchanged. Configure or rotate `OPENALEX_API_KEY` using Sites secret tools, never source files, build-time Pages variables, client storage, or the GitHub repository. Both secrets and frontend changes require their respective deployment workflows. API references: https://help.openalex.org/api/authentication/ and https://help.openalex.org/api/searching/.
+
+## OpenAlex researcher discovery
+
+Faculty connections opens with live OpenAlex authors whose last-known institution includes UNM (`I169521973`, ROR `05fs6jp91`). The Outside UNM switch excludes that institution, including dual affiliations; unknown affiliations are excluded. These are publication-derived affiliations, not verified current appointments, professor titles, GradPath membership, or availability to supervise. No contact addresses are invented or inferred from names.
+
+The `/api/researchers` endpoint accepts an optional 2–120 character name, inside/outside scope, all fields or Computer Science (`topics.field.id:17`), and pages 1–20 (12 authors each). Author name search does not search research keywords. Unnamed lists sort by publication count and are labeled accordingly, not presented as personal fit rankings. Cards link to OpenAlex publications and ORCID when available. Snapshots can be saved in `gradpath-v1` (up to 100) and reset with the planning workspace. The curated UNM email directory and browser-only demo account are retained in a separate collapsible section.
+
+The view loads UNM records automatically on first visit; later name searches are submitted explicitly. Only the name and selected filters leave the browser, never account profiles or private notes. The secret remains in the backend. Researchers and papers share the **same** network, burst and daily quotas and cache tables, with distinct cache keys. Adding author search does not double the free-key allowance. Responses are bounded, sanitized and cached for 24 hours. Browser caching lasts ten minutes. Pagination, scope changes, failure/retry and cancellation are covered in the researcher tests; no database migration is needed.
+
+Institution verified using `https://api.openalex.org/institutions/I169521973`. Author field semantics: https://help.openalex.org/data/authors/.
 
 ## Source layout
 - `public/app.js` and `public/data.js`: discovery and planning flows.
