@@ -3,7 +3,12 @@
 A research discovery and collaboration prototype for the UNM/CNM App Contest.
 
 ## Current demo
-- Public curated research directions, research briefs, and a browser-local roadmap.
+- Three entry paths: discover an idea from a student profile, develop an existing research question, or find student collaborators as a faculty member.
+- Public curated computing questions ranked by major, interests, skills, and time, alongside open faculty demo posts with matching interests.
+- **Explore my idea** connects a student's own question to existing catalog sources, individual researchers, related questions, and open demo posts. It explains its limited keyword matching and offers an idea brief download; it does not invent papers or run a live literature search.
+- **Find students** lets faculty select an open research post, review matching student interests and skills, view a profile, and start a demo conversation.
+- Student and faculty profiles showcase skills, projects, achievements, availability, and an optional HTTPS portfolio or lab link. Profile discovery is configurable. Research preferences and the student account's major, interests, and skills stay in sync when saved.
+- Research briefs and a browser-local roadmap remain available for curated questions.
 - Mock university sign-in with fictional student Alex Rivera and faculty Dr. Avery Morgan. No password, real NetID, ChatGPT sign-in, or official UNM authentication.
 - Faculty demo can create, edit, and close research posts.
 - Student demo can request to join open research; faculty demo can accept or decline; students can withdraw pending requests.
@@ -16,6 +21,8 @@ The browser demo uses `gradpath-university-demo-v1` in localStorage. Accounts, p
 
 The planning workspace separately uses `gradpath-v1`; resetting the university demo leaves it intact. All sample profiles and opportunities are fictional and visibly labeled. Requests do not enroll students in real research. No live AI service or university integration is included.
 
+Existing version 1 demo data gains the new showcase fields without replacing posts, requests, conversations, or profile edits. The initial demo has one editable student profile and one editable faculty profile. Real shared accounts and discovery across visitors require a separately deployed authenticated backend; GitHub Pages remains a static, browser-local prototype.
+
 The frontend adapter never calls the existing server API. The earlier authenticated backend remains protected and preserved for future implementation, including its immutable D1 migration history. Mock identities cannot access it or impersonate existing users. Existing hosted records are untouched. The mock university sign-in is a demonstration, not a production authentication system.
 
 ## Hosting and development
@@ -27,7 +34,7 @@ To build the Pages artifact locally, run `node scripts/build-pages.mjs` with Nod
 
 GitHub Pages does not run the retained API or database. The separate Vinext build produces a Cloudflare Worker with the existing Sites-provisioned D1 binding. Server code, migrations, and hosting settings are excluded from the Pages artifact.
 
-Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs`.
+Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs`.
 
 The browser demo does not require local database setup. To test the retained backend separately, apply generated migrations using the starter's documented Wrangler local migration command. Hosted migrations and records remain separate from local state.
 
@@ -35,6 +42,8 @@ Mock tests cover the student-to-faculty request and reply journey, research post
 
 ## Source layout
 - `public/app.js` and `public/data.js`: discovery and planning flows.
+- `public/matching.js`: explainable profile overlap and catalog keyword matching.
+- `public/journeys.js`: existing-idea search, student discovery, and profile showcases.
 - `public/mock-university.js`: isolated browser-only demo data and sessions.
 - `public/community.js` and `public/community.css`: mock sign-in, research, requests, and messaging interfaces.
 - `lib/gradpath-api.mjs` and `app/api/[...path]/route.ts`: retained authenticated backend, unused by the demo UI.

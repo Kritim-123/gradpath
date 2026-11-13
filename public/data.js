@@ -25,7 +25,7 @@ const TOPICS = [
 ];
 const INTERESTS = ['Machine learning','Human-computer interaction','Data science','Robotics','Cybersecurity','Distributed systems','Education','Creative computing'];
 const SKILLS = ['Python','Data analysis','JavaScript','Prototyping','Writing','Mathematics'];
-const DEFAULT_STATE = {profile:{interests:['Machine learning','Human-computer interaction'],skills:['Python','Data analysis'],weeks:12,goal:'Explore a thesis',context:'',customized:false},saved:[],facultySaved:[],plan:null,completed:[],notes:'',startDate:'2026-11-09'};
+const DEFAULT_STATE = {profile:{major:'Computer Science',interests:['Machine learning','Human-computer interaction'],skills:['Python','Data analysis'],weeks:12,goal:'Explore a thesis',context:'',customized:false},idea:{question:'',field:''},saved:[],facultySaved:[],plan:null,completed:[],notes:'',startDate:'2026-11-09'};
 const STEPS = [
  {title:'Explore the literature',text:'Read the starting resources and record open questions.',offset:0,weeks:2},
  {title:'Refine the question with an advisor',text:'Discuss feasibility, novelty, resources, and supervision.',offset:2,weeks:1},
@@ -33,3 +33,6 @@ const STEPS = [
  {title:'Evaluate and reflect',text:'Run the agreed evaluation and document limitations.',offset:6,weeks:3},
  {title:'Write and share the findings',text:'Prepare a research summary and review next steps.',offset:9,weeks:3}
 ];
+
+const RELATED_MAJORS={trust:['Data Science','Statistics'],data:['Data Science','Statistics'],creative:['Education','Design'],immersive:['Computer Engineering','Design'],security:['Cybersecurity','Information Systems'],compute:['Computer Engineering','Applied Mathematics']};
+TOPICS.forEach(topic=>{topic.majors=['Computer Science',...(RELATED_MAJORS[topic.id]||[])];});

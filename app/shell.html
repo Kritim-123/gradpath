@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#204d43">
-<meta name="description" content="Find a research direction that feels like you. Explore interests, connect with UNM faculty, and map your graduate journey.">
+<meta name="description" content="Discover research ideas, develop your own question, find student collaborators, and showcase your skills with GradPath.">
 <title>GradPath — Find your research direction</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/community.css">
 <script src="/data.js" defer></script>
+<script src="/matching.js" defer></script>
 <script src="/mock-university.js" defer></script>
 <script src="/community.js" defer></script>
+<script src="/journeys.js" defer></script>
 <script src="/app.js" defer></script>
 </head>
 <body>
@@ -31,7 +33,7 @@
 <header class="topbar"><button class="mobile-menu icon-button" aria-label="Toggle navigation" data-action="menu"></button><div class="breadcrumb">Your workspace <span>/</span> <strong id="crumb">Discover</strong></div><div class="topbar-actions"><a id="account-top" class="btn account-top" href="#account">University sign in</a><button class="prototype-badge" data-action="about"><span></span>Interactive prototype</button><button class="icon-button help-button" aria-label="About this prototype" data-action="about">?</button></div></header>
 <div id="demo-mode-bar" class="demo-mode-bar" role="status"></div>
 <main id="main" tabindex="-1"></main>
-<footer class="app-footer"><span>Made for your next chapter.</span><span>Independent student prototype · UNM sources linked throughout</span></footer>
+
 </div>
 <dialog id="modal" aria-labelledby="modal-title"><div id="modal-content"></div></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>

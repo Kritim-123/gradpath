@@ -6,11 +6,15 @@ const UniversityDemo = (() => {
  const now=()=>new Date().toISOString();
  const uid=()=>crypto.randomUUID();
  function fresh(){const created=now();return {version:1,activeRole:null,accounts:[
-  {id:'demo-student',role:'student',name:'Alex Rivera (demo)',netid:'student.demo',email:'student@gradpath.example',institution:'University of New Mexico (demo)',department:'Computer Science',bio:'A fictional graduate student exploring trustworthy AI and research collaboration.',interests:'Machine learning, Python, Human-computer interaction',created_at:created},
-  {id:'demo-faculty',role:'faculty',name:'Dr. Avery Morgan (demo)',netid:'faculty.demo',email:'faculty@gradpath.example',institution:'University of New Mexico (demo)',department:'Computer Science',bio:'Fictional faculty profile for trying research posts, join requests, and messaging. Not an actual UNM professor.',interests:'Machine learning, Data science, Human-computer interaction',created_at:created}
+  {id:'demo-student',role:'student',name:'Alex Rivera (demo)',netid:'student.demo',email:'student@gradpath.example',institution:'University of New Mexico (demo)',department:'Computer Science',bio:'A fictional graduate student exploring trustworthy AI and research collaboration.',interests:'Machine learning, Human-computer interaction',skills:'Python, Data analysis, Prototyping',projects:'Sample project: compared two ways to explain a model prediction in a small Python notebook.',achievements:'Sample experience: presented a class project on trustworthy AI.',portfolio:'',availability:'5–8 hours per week',discoverable:true,created_at:created},
+  {id:'demo-faculty',role:'faculty',name:'Dr. Avery Morgan (demo)',netid:'faculty.demo',email:'faculty@gradpath.example',institution:'University of New Mexico (demo)',department:'Computer Science',bio:'Fictional faculty profile for trying research posts, join requests, and messaging. Not an actual UNM professor.',interests:'Machine learning, Data science, Human-computer interaction',skills:'Machine learning, Experimental design, Research mentoring',projects:'Sample research: investigating how people understand model explanations and uncertainty.',achievements:'Fictional research profile for demonstrating a faculty portfolio.',portfolio:'',availability:'Open to research conversations in this demo',discoverable:true,created_at:created}
  ],research:[{id:'demo-research',faculty_id:'demo-faculty',title:'Making machine learning explanations easier to understand',description:'Sample project: explore how students interpret model predictions and uncertainty. Try a small Python experiment, compare two explanation designs, and document what makes the results easier to understand. This is a fictional opportunity for demonstrating GradPath.',field:'Machine learning',skills:'Python, prototyping, curiosity about user experience',commitment:'5–8 hours/week for one semester',location:'Hybrid · demo only',status:'open',created_at:created,updated_at:created}],requests:[],threads:[],messages:[]};}
  let data=fresh(),persistent=true;
  try{const saved=JSON.parse(localStorage.getItem(key));if(saved&&saved.version===1&&['accounts','research','requests','threads','messages'].every(k=>Array.isArray(saved[k]))&&['student','faculty'].every(role=>saved.accounts.some(a=>a.id==='demo-'+role&&a.role===role)))data=saved;}catch{persistent=false;}
+ // Add profile fields for returning visitors without replacing their existing activity.
+ const defaults=fresh().accounts;
+ data.accounts=data.accounts.map(a=>({...defaults.find(d=>d.id===a.id),...a}));
+ const publicProfile=a=>{const {email,netid,...profile}=clone(a);return profile;};
  const save=()=>{try{localStorage.setItem(key,JSON.stringify(data));}catch{persistent=false;}};
  const current=()=>data.accounts.find(a=>a.id==='demo-'+data.activeRole)||null;
  const requireRole=role=>{const a=current();if(!a)throw Error('Choose a mock university account to continue.');if(role&&a.role!==role)throw Error('Switch to the '+role+' demo account to try this action.');return a;};
@@ -25,7 +29,8 @@ const UniversityDemo = (() => {
   const [resource,id]=path.split('/');const a=current();const created=now();
   if(body===undefined){
    if(resource==='session')return {auth:a?{name:a.name,email:a.email,netid:a.netid}:null,account:a?clone(a):null,demo:true,persistent};
-   if(resource==='faculty')return {faculty:data.accounts.filter(a=>a.role==='faculty').map(a=>({...clone(a),legacy_id:null,demo:true}))};
+   if(resource==='faculty')return {faculty:data.accounts.filter(a=>a.role==='faculty'&&(a.discoverable||a.id===current()?.id)).map(a=>({...publicProfile(a),legacy_id:null,demo:true}))};
+   if(resource==='students'){requireRole('faculty');return {students:data.accounts.filter(a=>a.role==='student'&&a.discoverable).map(publicProfile)};}
    if(resource==='research')return {research:data.research.map(postView).reverse()};
    requireRole();
    if(resource==='requests')return {requests:data.requests.filter(r=>a.role==='student'?r.student_id===a.id:data.research.some(p=>p.id===r.research_id&&p.faculty_id===a.id)).map(r=>{const p=data.research.find(p=>p.id===r.research_id),student=person(r.student_id);return {...clone(r),title:p.title,faculty_id:p.faculty_id,faculty_name:person(p.faculty_id).name,student_name:student.name,student_bio:student.bio,student_interests:student.interests};}).reverse()};
@@ -36,6 +41,9 @@ const UniversityDemo = (() => {
    if(resource==='account'){
     if(body.role!==a.role)throw Error('Use Switch demo role to try another account.');
     const update={name:text(body,'name',2,80),institution:text(body,'institution',2,120),department:text(body,'department',2,100),bio:text(body,'bio',0,1500),interests:text(body,'interests',0,500)};
+    for(const [field,max] of [['skills',500],['projects',2000],['achievements',1500],['portfolio',500],['availability',150]])if(field in body)update[field]=text(body,field,0,max);
+    if(update.portfolio&&!ResearchMatch.portfolioURL(update.portfolio))throw Error('Use a valid https:// portfolio or lab website.');
+    if('discoverable' in body){if(typeof body.discoverable!=='boolean')throw Error('Choose a valid profile visibility.');update.discoverable=body.discoverable;}
     Object.assign(a,update);save();return {ok:true};
    }
    if(resource==='research'){

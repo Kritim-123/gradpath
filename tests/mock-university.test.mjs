@@ -6,12 +6,12 @@ import vm from 'node:vm';
 
 const source=readFileSync(new URL('../public/mock-university.js',import.meta.url),'utf8');
 function setup(store=new Map(),unavailable=false){
- const context=vm.createContext({crypto:{randomUUID},localStorage:{
+ const context=vm.createContext({URL,crypto:{randomUUID},localStorage:{
   getItem(k){if(unavailable)throw Error('Storage blocked');return store.get(k)??null;},
   setItem(k,v){if(unavailable)throw Error('Storage blocked');store.set(k,v);}
  }});
  // No network API is supplied: the complete demo must work without one.
- vm.runInContext(source+'\nthis.demo=UniversityDemo;',context);
+ vm.runInContext(readFileSync(new URL('../public/matching.js',import.meta.url),'utf8')+'\n'+source+'\nthis.demo=UniversityDemo;',context);
  return {demo:context.demo,store};
 }
 const post={title:'Accessible research discovery',description:'Explore how graduate students discover suitable research and understand the next steps.',field:'HCI',skills:'Prototyping',commitment:'5 hours/week',location:'Demo workspace',status:'open'};
@@ -80,4 +80,39 @@ test('unavailable browser storage keeps an honest in-memory demo usable',async()
  demo.signOut();demo.signIn('student');
  assert.equal((await demo.api('research')).research.length,2);
  assert.equal((await setup(new Map(),true).demo.api('research')).research.length,1);
+});
+
+test('showcase edits persist, discovery is opt-in per profile, and student discovery requires faculty role',async()=>{
+ const {demo,store}=setup();
+ await assert.rejects(demo.api('students'),/Choose a mock/);
+ demo.signIn('student');
+ await assert.rejects(demo.api('students'),/Switch to the faculty/);
+ const original=(await demo.api('session')).account;
+ await demo.api('account',{...original,skills:'JavaScript, Prototyping',projects:'Built an accessible prototype.',achievements:'Presented a demo.',portfolio:'https://example.com/work',availability:'4 hours per week',discoverable:true});
+ const reloaded=setup(store).demo;reloaded.signIn('faculty');
+ const student=(await reloaded.api('students')).students[0];
+ assert.equal(student.projects,'Built an accessible prototype.');
+ assert.equal(student.skills,'JavaScript, Prototyping');
+ assert.equal(student.email,undefined);
+ assert.equal(student.netid,undefined);
+ reloaded.signIn('student');await reloaded.api('account',{...original,discoverable:false});
+ reloaded.signIn('faculty');assert.equal((await reloaded.api('students')).students.length,0);
+});
+
+test('existing demo storage gains showcase fields without losing posts or messages',async()=>{
+ const {demo,store}=setup();demo.signIn('faculty');await demo.api('research',post);
+ const old=JSON.parse(store.get('gradpath-university-demo-v1'));
+ for(const account of old.accounts)for(const field of ['skills','projects','achievements','portfolio','availability','discoverable'])delete account[field];
+ old.accounts[0].bio='My existing introduction';
+ store.set('gradpath-university-demo-v1',JSON.stringify(old));
+ const migrated=setup(store).demo;
+ assert.equal((await migrated.api('research')).research.length,2);
+ const student=(await migrated.api('students')).students[0];
+ assert.equal(student.bio,'My existing introduction');assert.ok(student.skills);
+ migrated.signIn('student');
+ const a=(await migrated.api('session')).account;
+ await assert.rejects(migrated.api('account',{...a,portfolio:'javascript:alert(1)'}),/https/);
+ await assert.rejects(migrated.api('account',{...a,portfolio:'https://user:password@example.com'}),/https/);
+ await assert.rejects(migrated.api('account',{...a,discoverable:'false'}),/visibility/);
+ assert.equal((await migrated.api('session')).account.portfolio,'');
 });
