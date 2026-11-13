@@ -6,7 +6,7 @@ A research discovery and collaboration prototype for the UNM/CNM App Contest.
 - Three entry paths: discover an idea from a student profile, develop an existing research question, or find student collaborators as a faculty member.
 - The home page shows both student paths for a student, only the recruiting path for faculty, and all three paths for signed-out visitors. Navigation follows the same roles, with a grouped sidebar, a persistent desktop icon rail, and a mobile drawer that supports Escape and keyboard focus containment.
 - Public curated computing questions ranked by major, interests, skills, and time, alongside open faculty demo posts with matching interests.
-- **Explore my idea** connects a student's own question to existing catalog sources, individual researchers, related questions, and open demo posts. It explains its limited keyword matching and offers an idea brief download; it does not invent papers or run a live literature search.
+- **Explore my idea** searches real publication metadata from OpenAlex using editable keywords from a question or a selected profile interest. Students can filter for open access, sort by relevance or newest, read available abstracts, follow publication/open-version links, and download a reading list. Curated sources, local researchers, related questions, and demo posts remain separately labeled.
 - **Find students** lets faculty select an open research post, review matching student interests and skills, view a profile, and start a demo conversation.
 - Student and faculty profiles showcase skills, projects, achievements, availability, and an optional HTTPS portfolio or lab link. Profile discovery is configurable. Research preferences and the student account's major, interests, and skills stay in sync when saved.
 - Research briefs and a browser-local roadmap remain available for curated questions.
@@ -35,15 +35,27 @@ To build the Pages artifact locally, run `node scripts/build-pages.mjs` with Nod
 
 GitHub Pages does not run the retained API or database. The separate Vinext build produces a Cloudflare Worker with the existing Sites-provisioned D1 binding. Server code, migrations, and hosting settings are excluded from the Pages artifact.
 
-Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs`.
+Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs tests/openalex.test.mjs`.
 
 The browser demo does not require local database setup. To test the retained backend separately, apply generated migrations using the starter's documented Wrangler local migration command. Hosted migrations and records remain separate from local state.
 
 Mock tests cover the student-to-faculty request and reply journey, research posting and restrictions, persistence, sign-out, reset, separate visitors, and unavailable storage. Backend tests use fresh in-memory SQLite databases and actual migrations to verify authorization, ownership, CSRF, request decisions, message access, rate limits, and faculty matching.
 
+## OpenAlex paper search
+
+The static app calls `https://api.openalex.org/works` directly after an explicit search or interest selection; page loads and typing do not transmit searches. Requests send only search text, open-access and retraction filters, sorting, and selected metadata fields. No profile identity, private notes, or messages are sent, and requests omit credentials and the referrer. OpenAlex still receives normal connection information including the visitor's IP address.
+
+This uses OpenAlex's documented anonymous access, not an embedded API key. Anonymous quotas are shared by network IP and may be exhausted, especially on campus networks. Loading, no results, offline/timeouts, access failures, and rate limits have explicit states and a link to continue on OpenAlex. The UI does not replace API failures with sample papers. At implementation time, a live record lookup confirmed CORS and metadata shape; live search from the development network returned HTTP 429 because its anonymous daily allowance was exhausted.
+
+Queries are editable; simple keyword extraction is not semantic/AI search. Six results are shown per request, with a link to explore more on OpenAlex. Successful responses are cached only in memory for ten minutes (at most twelve searches). A newer search cancels/replaces an earlier one. Reset workspace cancels requests and clears the cache. Abstracts and links are treated as untrusted external data: text is escaped, URL protocols are restricted, and retracted records are excluded. Metadata can be missing, and a listed author is not a verified GradPath professor or an available advisor.
+
+For reliable production traffic, move requests behind a separately hosted backend with a secret OpenAlex API key, request limits, and shared caching. Never add a key to public JavaScript, build-time Pages variables, or the repository. API documentation: https://help.openalex.org/api/authentication/ and https://help.openalex.org/api/searching/.
+
 ## Source layout
 - `public/app.js` and `public/data.js`: discovery and planning flows.
 - `public/matching.js`: explainable profile overlap and catalog keyword matching.
+- `public/openalex.js`: anonymous API client, publication normalization, safe URLs, timeout/cancellation, and bounded memory caching.
+- `public/papers.js` and `public/papers.css`: explicit search, interest shortcuts, filters, results, and reading-list download.
 - `public/journeys.js`: existing-idea search, student discovery, and profile showcases.
 - `public/navigation.js` and `public/navigation.css`: role-specific navigation and responsive sidebar controls. The desktop preference uses `gradpath-navigation-v1` and is separate from demo and planning records.
 - `public/mock-university.js`: isolated browser-only demo data and sessions.

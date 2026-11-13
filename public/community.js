@@ -21,7 +21,7 @@ function updateAccountChrome(){
  document.querySelector('.profile-link').setAttribute('aria-label',account?'My profile: '+title:'University sign in');
  document.querySelector('.profile-link').title=account?'My profile: '+title:'University sign in';
  document.getElementById('account-top').textContent=account?'My demo account':'University sign in';
- document.getElementById('demo-mode-bar').innerHTML='<span><strong>University sign-in demo</strong> · '+(community.persistent===false?'Storage unavailable; changes last for this visit.':'Activity stays in this browser.')+'</span>'+(account?button('Switch demo role','demo-switch','','small'):'');
+ document.getElementById('demo-mode-bar').innerHTML='<span><strong>University sign-in demo</strong> · '+(community.persistent===false?'Storage unavailable; changes last for this visit.':'Demo account activity stays in this browser.')+'</span>'+(account?button('Switch demo role','demo-switch','','small'):'');
 }
 function heading(kicker,title,description,actions=''){return '<div class="heading-row"><div><div class="eyebrow">'+kicker+'</div><h1>'+title+'</h1><p>'+description+'</p></div>'+actions+'</div>';}
 function loading(text='Loading your workspace…'){return '<div class="panel loading-state" role="status">'+icon('clock')+'<p>'+text+'</p></div>';}
