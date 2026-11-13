@@ -4,6 +4,7 @@ A research discovery and collaboration prototype for the UNM/CNM App Contest.
 
 ## Current demo
 - Three entry paths: discover an idea from a student profile, develop an existing research question, or find student collaborators as a faculty member.
+- The home page shows both student paths for a student, only the recruiting path for faculty, and all three paths for signed-out visitors. Navigation follows the same roles, with a grouped sidebar, a persistent desktop icon rail, and a mobile drawer that supports Escape and keyboard focus containment.
 - Public curated computing questions ranked by major, interests, skills, and time, alongside open faculty demo posts with matching interests.
 - **Explore my idea** connects a student's own question to existing catalog sources, individual researchers, related questions, and open demo posts. It explains its limited keyword matching and offers an idea brief download; it does not invent papers or run a live literature search.
 - **Find students** lets faculty select an open research post, review matching student interests and skills, view a profile, and start a demo conversation.
@@ -34,7 +35,7 @@ To build the Pages artifact locally, run `node scripts/build-pages.mjs` with Nod
 
 GitHub Pages does not run the retained API or database. The separate Vinext build produces a Cloudflare Worker with the existing Sites-provisioned D1 binding. Server code, migrations, and hosting settings are excluded from the Pages artifact.
 
-Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs`.
+Node 22.13 or later is required. Follow the Sites skill for dependency installation and publishing. Commands: `npm run dev`, `npm run build`, and `node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs`.
 
 The browser demo does not require local database setup. To test the retained backend separately, apply generated migrations using the starter's documented Wrangler local migration command. Hosted migrations and records remain separate from local state.
 
@@ -44,6 +45,7 @@ Mock tests cover the student-to-faculty request and reply journey, research post
 - `public/app.js` and `public/data.js`: discovery and planning flows.
 - `public/matching.js`: explainable profile overlap and catalog keyword matching.
 - `public/journeys.js`: existing-idea search, student discovery, and profile showcases.
+- `public/navigation.js` and `public/navigation.css`: role-specific navigation and responsive sidebar controls. The desktop preference uses `gradpath-navigation-v1` and is separate from demo and planning records.
 - `public/mock-university.js`: isolated browser-only demo data and sessions.
 - `public/community.js` and `public/community.css`: mock sign-in, research, requests, and messaging interfaces.
 - `lib/gradpath-api.mjs` and `app/api/[...path]/route.ts`: retained authenticated backend, unused by the demo UI.

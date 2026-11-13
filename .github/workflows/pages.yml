@@ -24,7 +24,7 @@ jobs:
           node-version: '22'
           package-manager-cache: false
       - name: Check prototype workflows
-        run: node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs
+        run: node --test tests/accounts.test.mjs tests/mock-university.test.mjs tests/matching.test.mjs tests/navigation.test.mjs
       - name: Export the browser demo
         run: node scripts/build-pages.mjs
       - name: Configure Pages

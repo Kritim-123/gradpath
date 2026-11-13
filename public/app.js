@@ -1,5 +1,10 @@
 'use strict';
 const paths = {
+ 'collapse-panel':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m8-12-4 4 4 4"/>',
+ 'expand-panel':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m4-12 4 4-4 4"/>',
+ message:'<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-2 2v-10A8.5 8.5 0 0 1 10.5 3H13a8 8 0 0 1 8 8.5Z"/><path d="M7 10h10M7 14h6"/>',
+ requests:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2m-6 9 2 2 4-5"/>',
+ students:'<path d="m2 8 10-5 10 5-10 5-10-5Zm4 2v7c4 3 8 3 12 0v-7M22 8v9"/>',
  compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z"/>',
  bookmark:'<path d="M6 4h12v17l-6-4-6 4V4Z"/>',
  people:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/>',
@@ -56,12 +61,18 @@ function art(type){
  return '<svg class="art-svg" viewBox="0 0 200 170" aria-hidden="true">'+content+'</svg>';
 }
 function nav(){
- const items=[['discover','compass','Discover'],['idea','search','Explore my idea'],['students','people','Find students'],['opportunities','book','Research opportunities'],['saved','bookmark','Saved directions'],['faculty','people','Faculty connections'],['roadmap','route','My roadmap'],['profile','profile','Research preferences'],['requests','people','Research requests'],['messages','people','Messages'],['account','profile','My profile']];
- document.getElementById('nav').innerHTML=items.map(function(n){return '<a href="#'+n[0]+'" class="nav-link '+((current==='research'?'discover':current==='showcase'?'account':current)===n[0]?'active':'')+'"'+((current==='research'?'discover':current==='showcase'?'account':current)===n[0]?' aria-current="page"':'')+'>'+icon(n[1])+'<span>'+n[2]+'</span>'+(n[0]==='saved'?'<span class="count">'+state.saved.length+'</span>':'')+'</a>';}).join('');
- document.getElementById('crumb').textContent=current==='research'?'Research direction':current==='showcase'?'Research profile':(items.find(function(n){return n[0]===current;})||items[0])[2];
+ const groups=navigationGroups(community.account?.role);
+ const active=current==='research'?'discover':current==='showcase'?'account':current;
+ document.getElementById('nav').innerHTML=community.ready?groups.map(group=>'<section class="nav-section" aria-label="'+group.label+'"><h2 class="nav-section-label">'+group.label+'</h2><div class="nav-section-items">'+group.items.map(n=>'<a href="#'+n[0]+'" class="nav-link '+(active===n[0]?'active':'')+'" aria-label="'+n[2]+'" title="'+n[2]+'"'+(active===n[0]?' aria-current="page"':'')+'>'+icon(n[1])+'<span class="nav-text">'+n[2]+'</span>'+(n[0]==='saved'?'<span class="count">'+state.saved.length+'</span>':'')+'</a>').join('')+'</div></section>').join(''):'';
+ const all=groups.flatMap(g=>g.items);
+ document.getElementById('crumb').textContent=current==='research'?'Research direction':current==='showcase'?'Research profile':current==='account'?'My profile':(all.find(n=>n[0]===current)||[null,null,'Workspace'])[2];
+ const profileLink=document.querySelector('.profile-link');
+ profileLink.classList.toggle('active',active==='account');
+ if(active==='account')profileLink.setAttribute('aria-current','page');else profileLink.removeAttribute('aria-current');
  document.querySelector('.mobile-menu').innerHTML=icon('menu');
+ applyNavigationLayout();
 }
-function route(){const parts=location.hash.slice(1).split('/');current=['discover','saved','faculty','roadmap','profile','research'].concat(communityPages).includes(parts[0])?parts[0]:'discover';currentId=parts[1]||'';if(current==='profile')draft=copy(state.profile);render();document.querySelector('.sidebar').classList.remove('open');document.querySelector('.mobile-menu').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});}
+function route(){const parts=location.hash.slice(1).split('/');current=['discover','saved','faculty','roadmap','profile','research'].concat(communityPages).includes(parts[0])?parts[0]:'discover';currentId=parts[1]||'';if(current==='profile')draft=copy(state.profile);render();setMobileNavigation(false);window.scrollTo({top:0,behavior:'instant'});}
 function go(page){if(location.hash==='#'+page){route();}else{location.hash=page;}}
 function render(){nav();if(communityPages.includes(current)){main.innerHTML=communityPage();}else if(current==='research'){const t=TOPICS.find(function(x){return x.id===currentId;});main.innerHTML=t?detail(t):empty('This direction isn’t available','Explore the curated research directions to get started.','Discover directions','discover','compass');}else main.innerHTML=({discover:discover,saved:saved,faculty:faculty,roadmap:roadmap,profile:profile}[current])();document.title=(current==='research'?'Research direction':document.getElementById('crumb').textContent)+' · GradPath';}
 function empty(title,text,label,target,ico){return '<div class="empty-state"><div class="empty-icon">'+icon(ico||'compass')+'</div><h2>'+title+'</h2><p>'+text+'</p><a class="btn primary" href="#'+target+'">'+label+icon('arrow')+'</a></div>';}
@@ -72,6 +83,8 @@ function card(t){
 function selectedTopics(){let list=ranked().filter(function(t){return (filter.category==='all'||t.category===filter.category)&&(!filter.query||[t.title,t.description,t.category].concat(t.interests).join(' ').toLowerCase().includes(filter.query.toLowerCase()));});return filter.tab==='recommended'?list.slice(0,3):list;}
 function researchResults(){const list=selectedTopics();return list.length?'<div class="research-grid">'+list.map(card).join('')+'</div>':'<div class="empty-state"><h2>No directions found yet</h2><p>Try a broader search or explore all research fields.</p>'+button('Clear filters','clear-filters','','secondary','filter')+'</div>';}
 function discover(){
+ if(!community.ready)return loading('Opening your research workspace…');
+ if(community.account?.role==='faculty')return facultyHome();
  const label=state.profile.customized?'YOUR RESEARCH JOURNEY':'YOUR RESEARCH JOURNEY · SAMPLE PROFILE';
  return '<section class="hero"><div><div class="eyebrow">'+label+'</div><h1>Your interests.<br>Your <em>next discovery.</em></h1><p>Find a research question, develop your own idea,<br>or connect with your next collaborator.</p><a class="hero-link" href="#profile">'+icon('edit')+'Refine my interests '+icon('arrow')+'</a></div><div class="hero-art" aria-hidden="true"><svg viewBox="0 0 380 280" fill="none"><circle cx="205" cy="145" r="57" stroke="#bccba8" stroke-dasharray="3 6"/><circle cx="205" cy="145" r="93" stroke="#cbd8bb"/><circle cx="205" cy="145" r="133" stroke="#dce5d0"/><path d="M35 170c70-120 220-120 310 5" stroke="#c5d5ae" stroke-dasharray="4 7"/><circle cx="126" cy="95" r="6" fill="#b1c88a"/><circle cx="282" cy="197" r="7" fill="#b1c88a"/><circle cx="333" cy="107" r="4" fill="#8aa86c"/></svg><span class="orbit-label">'+icon('spark')+esc(state.profile.interests[0]||'Your curiosity')+'</span><div class="compass-center">'+icon('compass')+'</div><span class="orbit-label two">'+icon('leaf')+'A direction that feels like you</span></div></section>'+journeyChoices()+'<div class="step-strip"><div class="step-item current"><span class="number">1</span>Discover a direction</div><span class="step-arrow">→</span><div class="step-item"><span class="number">2</span>Connect with faculty</div><span class="step-arrow">→</span><div class="step-item"><span class="number">3</span>Map your next steps</div></div><section><div class="section-heading"><div><h2>A few paths worth exploring</h2><p>Start with your interests. Stay open to something unexpected.</p></div><a class="text-link" href="#profile">My profile '+icon('arrow')+'</a></div><div class="filters"><div class="tabs" aria-label="Research view"><button class="tab '+(filter.tab==='recommended'?'active':'')+'" data-action="filter-tab" data-value="recommended" aria-pressed="'+(filter.tab==='recommended')+'">For you</button><button class="tab '+(filter.tab==='all'?'active':'')+'" data-action="filter-tab" data-value="all" aria-pressed="'+(filter.tab==='all')+'">All directions</button></div><label class="search">'+icon('search')+'<input id="research-search" aria-label="Search research directions" placeholder="Search a topic…" value="'+esc(filter.query)+'"></label><select class="filter-select" id="category-filter" aria-label="Filter by research field"><option value="all">All fields</option>'+[...new Set(TOPICS.map(function(t){return t.category;}))].map(function(c){return '<option '+(filter.category===c?'selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select></div><div id="research-results">'+researchResults()+'</div><p class="sample-note">Curated computing questions, ordered by your major, interests, skills, and available time. Research novelty and feasibility need advisor review.</p></section>'+matchedFacultyResearch()+'<div class="callout-row"><a class="small-callout" href="#faculty"><span class="round-icon">'+icon('people')+'</span><div><h3>Good research starts with a conversation.</h3><p>Meet the UNM faculty behind the fields you’re exploring.</p></div>'+icon('arrow')+'</a><button class="small-callout" data-action="how" style="text-align:left"><span class="round-icon">'+icon('compass')+'</span><div><h3>You don’t need it all figured out.</h3><p>See how GradPath helps you take the first step.</p></div>'+icon('arrow')+'</button></div>';
 }
@@ -114,8 +127,6 @@ document.addEventListener('click',function(event){
  const action=el.dataset.action,v=el.dataset.value;
  if(action==='skip'){event.preventDefault();main.focus({preventScroll:true});return;}
  if(action==='route')go(v);
- if(action==='menu'){const open=document.querySelector('.sidebar').classList.toggle('open');el.setAttribute('aria-expanded',String(open));}
- if(action==='close-menu'){document.querySelector('.sidebar').classList.remove('open');document.querySelector('.mobile-menu').setAttribute('aria-expanded','false');document.querySelector('.mobile-menu').focus();}
  if(action==='close')modal.close();
  if(action==='save'){const i=state.saved.indexOf(v);if(i===-1)state.saved.push(v);else state.saved.splice(i,1);persist();render();notify(i===-1?'Direction saved to your shortlist.':'Direction removed from your shortlist.');}
  if(action==='filter-tab'){filter.tab=v;render();}
@@ -176,4 +187,5 @@ document.addEventListener('submit',async function(event){
 });
 modal.addEventListener('click',function(event){if(event.target===modal){const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)modal.close();}});
 window.addEventListener('hashchange',function(){route();main.focus({preventScroll:true});});
+initializeNavigation();
 route();

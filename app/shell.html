@@ -9,28 +9,28 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/community.css">
+<link rel="stylesheet" href="/navigation.css">
 <script src="/data.js" defer></script>
 <script src="/matching.js" defer></script>
 <script src="/mock-university.js" defer></script>
 <script src="/community.js" defer></script>
 <script src="/journeys.js" defer></script>
+<script src="/navigation.js" defer></script>
 <script src="/app.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main" data-action="skip">Skip to content</a>
-<aside class="sidebar" aria-label="Main navigation">
-<button class="mobile-close icon-button" data-action="close-menu" aria-label="Close navigation">×</button>
-<a class="brand" href="#discover" aria-label="GradPath home"><img class="brand-logo" src="/mark.svg" alt="">GradPath</a>
-<div class="workspace"><span class="workspace-icon">U</span><div><strong>University of New Mexico</strong><small>Graduate workspace</small></div></div>
-<div class="nav-label">YOUR JOURNEY</div>
-<nav id="nav"></nav>
+<aside id="sidebar" class="sidebar" aria-label="Main navigation">
+<div class="sidebar-header"><a class="brand" href="#discover" aria-label="GradPath home" title="GradPath home"><img class="brand-logo" src="/mark.svg" alt=""><span class="brand-name">GradPath</span></a><button id="sidebar-collapse" class="sidebar-collapse icon-button" data-action="collapse-navigation" aria-label="Collapse navigation" aria-controls="nav" aria-expanded="true"></button><button class="mobile-close icon-button" data-action="close-menu" aria-label="Close navigation">×</button></div>
+<div class="workspace" title="University of New Mexico"><span class="workspace-icon" aria-hidden="true">U</span><div class="workspace-copy"><strong>University of New Mexico</strong><small>Graduate workspace</small></div></div>
+<nav id="nav" aria-label="Workspace"></nav>
 <div class="sidebar-bottom">
-<div class="journey-note"><span class="mini-spark">✧</span><p>Every great question<br>starts with curiosity.</p><span>Let’s find yours.</span></div>
-<button class="profile-link" data-action="route" data-value="account"><span class="avatar">GS</span><span><strong>Graduate student</strong><small>MS · Computer Science</small></span><span class="profile-arrow">↗</span></button>
+<button class="profile-link" data-action="route" data-value="account" aria-label="My profile" title="My profile"><span class="avatar">GS</span><span class="account-copy"><strong>Graduate student</strong><small>MS · Computer Science</small></span><span class="profile-arrow">↗</span></button>
 </div>
 </aside>
+<button id="navigation-backdrop" class="navigation-backdrop" data-action="close-menu" aria-label="Close navigation" tabindex="-1" hidden></button>
 <div class="page-shell">
-<header class="topbar"><button class="mobile-menu icon-button" aria-label="Toggle navigation" data-action="menu"></button><div class="breadcrumb">Your workspace <span>/</span> <strong id="crumb">Discover</strong></div><div class="topbar-actions"><a id="account-top" class="btn account-top" href="#account">University sign in</a><button class="prototype-badge" data-action="about"><span></span>Interactive prototype</button><button class="icon-button help-button" aria-label="About this prototype" data-action="about">?</button></div></header>
+<header class="topbar"><button class="mobile-menu icon-button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" data-action="menu"></button><div class="breadcrumb">Your workspace <span>/</span> <strong id="crumb">Discover</strong></div><div class="topbar-actions"><a id="account-top" class="btn account-top" href="#account">University sign in</a><button class="prototype-badge" data-action="about"><span></span>Interactive prototype</button><button class="icon-button help-button" aria-label="About this prototype" data-action="about">?</button></div></header>
 <div id="demo-mode-bar" class="demo-mode-bar" role="status"></div>
 <main id="main" tabindex="-1"></main>
 

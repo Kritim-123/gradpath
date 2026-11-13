@@ -2,11 +2,16 @@
 let studentProject='',studentQuery='';
 
 function journeyChoices(){
- return `<section class="journey-choices" aria-label="Choose your research path">
+ const role=community.account?.role;
+ return `<section class="journey-choices ${role==='student'?'student-paths':role==='faculty'?'faculty-paths':''}" aria-label="Choose your research path">${role!=='faculty'?`
   <a class="journey-card" href="#profile"><span class="light-label">FIND YOUR DIRECTION</span>${icon('compass')}<h2>I need a research idea</h2><p>Start with your major, interests, and skills. Explore questions you could work on.</p><span class="text-link">Find ideas for me ${icon('arrow')}</span></a>
   <a class="journey-card" href="#idea"><span class="light-label">DEVELOP YOUR QUESTION</span>${icon('book')}<h2>I already have an idea</h2><p>Describe your question to find related researchers and starting sources.</p><span class="text-link">Explore my idea ${icon('arrow')}</span></a>
-  <a class="journey-card" href="#students"><span class="light-label">BUILD YOUR RESEARCH TEAM</span>${icon('people')}<h2>I am looking for students</h2><p>Share your research and discover students with relevant interests and skills.</p><span class="text-link">Find student collaborators ${icon('arrow')}</span></a>
+  `:''}${role!=='student'?`<a class="journey-card" href="#students"><span class="light-label">BUILD YOUR RESEARCH TEAM</span>${icon('people')}<h2>I am looking for students</h2><p>Share your research and discover students with relevant interests and skills.</p><span class="text-link">Find student collaborators ${icon('arrow')}</span></a>`:''}
  </section>`;
+}
+function facultyHome(){
+ return heading('YOUR FACULTY WORKSPACE','Research grows with the right people.','Connect your research with students who share your interests and bring useful skills.')+journeyChoices()+
+  `<div class="faculty-home-actions"><a class="btn" href="#opportunities">${icon('book')} Manage research posts</a><a class="btn" href="#requests">${icon('requests')} Review student requests</a><a class="btn" href="#account">${icon('profile')} Showcase my research</a></div>`;
 }
 function fitReasons(match){return `<p class="match-reasons">${esc(match.reasons.join(' · ')||'Explore the profile and discuss possible fit.')}</p>`;}
 function postMatch(post){return ResearchMatch.fit(state.profile,{field:post.field,skills:post.skills,department:post.department});}

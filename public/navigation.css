@@ -1,0 +1,40 @@
+/* A fixed header and account area keep navigation usable on shorter screens. */
+.sidebar{width:248px;padding:20px 16px 14px;overflow:hidden;gap:0;background:#f0f3ed}
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-shrink:0}
+.sidebar .brand{font-size:25px;gap:9px;padding:0;letter-spacing:-1px;min-width:0}
+.sidebar .brand-logo{width:34px;height:34px}
+.sidebar-collapse{width:30px;height:30px;border-radius:8px;background:transparent;border-color:transparent;flex-shrink:0;color:#64786e}
+.sidebar-collapse:hover{background:#e2e9df;color:var(--green)}
+.sidebar-collapse .icon{width:19px;height:19px}
+.sidebar .workspace{margin:24px 0 18px;padding:12px 10px;background:#e8eee4;border:0;border-radius:12px;gap:10px;flex-shrink:0}
+.workspace-copy{min-width:0}.sidebar .workspace strong{font-size:10px;line-height:1.4;display:block}.sidebar .workspace small{font-size:10px;margin-top:3px}.sidebar .workspace-icon{width:30px;height:33px;flex-shrink:0}
+.sidebar #nav{display:block;flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:0 3px 10px;scrollbar-width:thin;scrollbar-color:#ccd6c9 transparent}
+.nav-section+.nav-section{margin-top:18px}.nav-section-label{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;font-weight:650;color:#78877b;margin:0 10px 7px;line-height:1.5}
+.nav-section-items{display:grid;gap:3px}.sidebar .nav-link{position:relative;min-height:39px;padding:9px 11px;gap:10px;border-radius:9px;font-size:12px;line-height:1.4;font-weight:550;white-space:nowrap;color:#586d60}
+.sidebar .nav-link>.icon{width:19px;height:19px;flex-shrink:0}.sidebar .nav-link:hover{background:#e3eadf;color:#284d3c}.sidebar .nav-link.active{background:#244f43;color:#fff;box-shadow:0 3px 8px #204f4312}.sidebar .nav-link.active .count{color:#fff}
+.nav-link .nav-text{overflow:hidden;text-overflow:ellipsis}.sidebar .nav-link .count{font-size:9px;min-width:18px;text-align:center;margin-left:auto}
+.sidebar-bottom{margin-top:0;padding-top:10px;flex-shrink:0}.sidebar .profile-link{padding:12px 6px 0;gap:10px;min-height:53px}.sidebar .profile-link .avatar{flex-shrink:0}.account-copy{min-width:0;flex:1}.sidebar .profile-link strong{max-width:none;font-size:11px;white-space:nowrap}.sidebar .profile-link small{font-size:10px}.sidebar .profile-link .profile-arrow{font-size:14px}.sidebar .profile-link.active .avatar{background:var(--green);color:white}
+.page-shell{margin-left:248px}.navigation-backdrop{display:none}.journey-choices.student-paths{grid-template-columns:repeat(2,minmax(0,1fr))}.journey-choices.faculty-paths{grid-template-columns:1fr;max-width:850px;margin-top:24px}.faculty-paths .journey-card{padding:30px 34px;background:#eef3e7;border-color:#d8e3cf}.faculty-paths .journey-card h2{font-size:27px}.faculty-paths .journey-card p{font-size:14px;max-width:540px}.faculty-paths .journey-card .text-link{font-size:12px}.faculty-home-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+@media(min-width:681px){
+ .navigation-collapsed .sidebar{width:78px;padding:20px 11px 14px}
+ .navigation-collapsed .page-shell{margin-left:78px}
+ .navigation-collapsed .sidebar-header{flex-direction:column;gap:12px}
+ .navigation-collapsed .brand-name,.navigation-collapsed .workspace-copy,.navigation-collapsed .nav-section-label,.navigation-collapsed .nav-text,.navigation-collapsed .count,.navigation-collapsed .account-copy,.navigation-collapsed .profile-arrow{display:none}
+ .navigation-collapsed .sidebar .workspace{margin:18px 0 16px;padding:8px 0;justify-content:center;background:transparent;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0}
+ .navigation-collapsed .sidebar .nav-link{justify-content:center;padding:11px 0;min-height:42px}
+ .navigation-collapsed .nav-section+.nav-section{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+ .navigation-collapsed .sidebar .profile-link{justify-content:center;padding:12px 0 0}
+ .navigation-collapsed .toast{left:calc(50% + 39px)}
+}
+@media(max-width:1100px) and (min-width:681px){.sidebar{width:222px;padding:18px 12px 12px}.page-shell{margin-left:222px}.sidebar .brand{font-size:23px}.sidebar .nav-link{font-size:11px;padding:9px}.sidebar .workspace strong{font-size:9px}}
+@media(max-width:680px){
+ .sidebar{width:min(292px,calc(100vw - 40px));padding:22px 18px 16px;z-index:50;box-shadow:none;transform:translateX(-100%);visibility:hidden;transition:transform .2s,visibility .2s}
+ .sidebar.open{transform:translateX(0);visibility:visible;box-shadow:15px 0 50px #18362e30}
+ .sidebar-collapse{display:none}.sidebar .mobile-close{display:grid;position:static;width:34px;height:34px;border-radius:9px;flex-shrink:0;margin-left:auto}.sidebar .brand{font-size:25px}.sidebar .workspace strong{font-size:11px}.sidebar .workspace small{font-size:10px}
+ .sidebar .nav-link{font-size:13px;min-height:42px;padding:10px 12px}.sidebar .nav-section-label{font-size:10px}
+ .navigation-backdrop:not([hidden]){display:block;position:fixed;inset:0;background:#142e2859;border:0;z-index:49;cursor:default}
+ body.navigation-open{overflow:hidden}.page-shell,.navigation-collapsed .page-shell{margin-left:0}.journey-choices.student-paths{grid-template-columns:1fr}.faculty-paths .journey-card{padding:26px}.faculty-paths .journey-card h2{font-size:24px}
+ .faculty-home-actions{flex-direction:column;align-items:stretch}.faculty-home-actions .btn{justify-content:center}.topbar .mobile-menu{flex-shrink:0}
+}
+@media(prefers-reduced-motion:reduce){.sidebar{transition:none}}
+@media print{.navigation-backdrop{display:none!important}.page-shell,.navigation-collapsed .page-shell{margin-left:0}}

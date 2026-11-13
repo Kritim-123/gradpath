@@ -5,7 +5,7 @@ import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist', 'pages');
 const assets = [
-  'app.js', 'data.js', 'mock-university.js', 'community.js', 'matching.js', 'journeys.js',
+  'app.js', 'data.js', 'mock-university.js', 'community.js', 'matching.js', 'journeys.js', 'navigation.js', 'navigation.css',
   'styles.css', 'community.css', 'favicon.svg', 'mark.svg', 'wordmark.svg',
 ];
 
